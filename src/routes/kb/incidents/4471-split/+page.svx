@@ -1,0 +1,69 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: Wojciech Sierakowski
+status: active
+reviewed: 2026-10-28
+signature: Wojciech Sierakowski
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const tickets = {
+    parser: 'https://github.com/wsierakowski/support-kb/issues/1',
+    hint: 'https://github.com/wsierakowski/support-kb/issues/2',
+    'one-day': 'https://github.com/wsierakowski/support-kb/issues/3',
+  };
+</script>
+
+The [#4471 page](/kb/incidents/4471) says the ticket is one issue with one fix queued. Its own
+table says otherwise: it renders two causes, and a note that some reports are a one-day move.
+The subject-line rule ([decision 0001](/kb/decisions/0001-dedupe-by-subject)) merged them,
+because every one of these reports says "wrong date" in some words. The fix queued for the
+parser does not fix the other two.
+
+<Callout kind="warn">
+#4471 holds three problems. Each now has its own ticket, below. The counts come from the
+export at render time; when the desk merges more reports, they change here.
+</Callout>
+
+## The problems
+
+<ProblemTable ticket={4471} {tickets} />
+
+- **`parser`**: the shared parser reads every date month first, and these tenants write the day
+  first. The report says a day and a month swapped, e.g. "1 March is now 3 January". This is the
+  fix already queued.
+- **`hint`**: the booking-v3 form prints `MM/DD/YYYY` under its date field, but reads the date
+  the tenant's way, day first. People type what the hint tells them, and the date flips. Only
+  reports sent through the form of a booking-v3 tenant. The parser fix does not touch it; the
+  form hint (or the form's reading) has to change.
+- **`one-day`**: the date moves by one day, not by a swapped month: "Client in Lisbon got
+  Tuesday. Client in Toronto got Monday." It looks like a time zone or day-boundary bug. The
+  desk already read these as a one-day move (`desk-notes.json`), but the cause table files them
+  under `parser` by tenant.
+
+## How the reports were split
+
+1. One id, one report: the export lists some reports twice.
+2. The cause comes from the tenant (locale and booking form) and the channel, as
+   `causes.ts` defines it, never from `intakeTag`. Intake guesses from the browser, and its
+   guess disagrees with the cause on dozens of these reports.
+3. Reports the desk read as a one-day move are their own problem.
+4. The subject line decides nothing. Many different subjects were merged into #4471, and one
+   subject can belong to any of the three problems.
+
+## The desk's own table, for comparison
+
+<CauseTable ticket={4471} />
+
+## For the desk
+
+- When a merged ticket's table shows more than one cause, split it before it is marked known.
+- Read the rendered page, not only its words: here the table disagreed with the text above it.
+
+<RenderStamp {signature} />
