@@ -27,8 +27,8 @@ because every one of these reports says "wrong date" in some words. The fix queu
 parser does not fix the other two.
 
 <Callout kind="warn">
-#4471 holds three problems. Each now has its own ticket, below. The counts come from the
-export at render time; when the desk merges more reports, they change here.
+#4471 holds three problems. Each now has its own ticket, below. The counts use the desk's own
+view (`causes.ts`) of the export, and come from it at render time.
 </Callout>
 
 ## The problems
@@ -53,7 +53,8 @@ export at render time; when the desk merges more reports, they change here.
 2. The cause comes from the tenant (locale and booking form) and the channel, as
    `causes.ts` defines it, never from `intakeTag`. Intake guesses from the browser, and its
    guess disagrees with the cause on dozens of these reports.
-3. Reports the desk read as a one-day move are their own problem.
+3. Reports the desk read as a one-day move are their own problem. The desk still counts them
+   under their tenant's cause, so the rows add up to more than the ticket holds.
 4. The subject line decides nothing. Many different subjects were merged into #4471, and one
    subject can belong to any of the three problems.
 

@@ -28,7 +28,7 @@
     {#each split.groups as g (g.problem)}
       <tr>
         <td><code>{g.problem}</code></td>
-        <td>{g.reports.length}</td>
+        <td>{g.reports.length}{#if g.alsoIn}<sup>*</sup>{/if}</td>
         <td>{g.tenants}</td>
         <td>{g.firstSeen} → {g.lastSeen}</td>
         <td class="ids">{sample(g.reports)}</td>
@@ -40,7 +40,13 @@
   </tbody>
 </table>
 
+{#each split.groups.filter((g) => g.alsoIn) as g (g.problem)}
+  <p class="note"><sup>*</sup> {g.reports.length} reports read as a one-day move. The desk counts them under
+    {#each g.alsoIn ?? [] as c, i (c)}{i ? ', ' : ''}<code>{c}</code>{/each} by tenant, so they are in that count too.</p>
+{/each}
+
 <style>
   .sum { font-size: 1.1rem; }
+  .note { color: var(--muted); font-size: 0.85em; }
   .ids { color: var(--muted); font: 0.8em var(--mono); }
 </style>

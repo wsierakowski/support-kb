@@ -1,6 +1,7 @@
-// The problems inside one merged ticket. causes.ts files a report by its tenant; the desk also
-// reads some reports as a one-day move (desk-notes.json). A one-day move is not a flipped month,
-// so here it is its own problem, not a footnote under `parser`.
+// The problems inside one merged ticket, counted with the desk's own view: causes.ts files each
+// report by its tenant, so a report the desk read as a one-day move (desk-notes.json) still counts
+// under its cause. A one-day move is not a flipped month, so it also gets a row of its own,
+// marked `alsoIn` so nobody adds the rows up to more than the ticket holds.
 import { groupByCause, uniqueById, type Cause, type Report, type Tenant } from '#lib/kb/causes';
 
 export type Problem = Cause | 'one-day' | 'unplaced';
@@ -11,6 +12,8 @@ export type ProblemGroup = {
   tenants: number;
   firstSeen: string;
   lastSeen: string;
+  // Set on the one-day row: the cause its reports are counted under.
+  alsoIn?: Problem[];
 };
 
 function summarize(problem: Problem, rs: Report[]): ProblemGroup {
@@ -31,10 +34,12 @@ export function problemsIn(
   oneDayMove: readonly string[],
 ): { rows: number; merged: Report[]; groups: ProblemGroup[] } {
   const merged = uniqueById(all).filter((r) => r.mergedInto === ticket);
+  const groups = groupByCause(merged, tenantOf).map((g) => summarize(g.cause, g.reports));
   const moved = merged.filter((r) => oneDayMove.includes(r.id));
-  const rest = merged.filter((r) => !oneDayMove.includes(r.id));
-  const groups = groupByCause(rest, tenantOf).map((g) => summarize(g.cause, g.reports));
-  if (moved.length) groups.push(summarize('one-day', moved));
+  if (moved.length) {
+    const alsoIn = groups.filter((g) => g.reports.some((r) => oneDayMove.includes(r.id))).map((g) => g.problem);
+    groups.push({ ...summarize('one-day', moved), alsoIn });
+  }
   return {
     rows: all.filter((r) => r.mergedInto === ticket).length,
     merged,
