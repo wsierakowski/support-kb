@@ -4,7 +4,7 @@ title: '#4471 · three problems, not one'
 owner: Wojciech Sierakowski
 status: resolved
 reviewed: 2026-10-28
-signature: Wojciech Sierakowski
+signature: 'v1.eyJzdWIiOiIxNjc5IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMyMjEyNDYsImV4cCI6MTc5MzMwNzY0Nn0.dHJEvPYYBCFpj97xY5y-mInQ0aMFGdEX3W23FSgRY_c'
 ---
 
 <script>
