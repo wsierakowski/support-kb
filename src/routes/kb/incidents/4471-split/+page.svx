@@ -2,7 +2,7 @@
 layout: runbook
 title: '#4471 · three problems, not one'
 owner: Wojciech Sierakowski
-status: active
+status: resolved
 reviewed: 2026-10-28
 signature: Wojciech Sierakowski
 ---
@@ -30,6 +30,15 @@ parser does not fix the other two.
 #4471 holds three problems. Each now has its own ticket, below. The counts use the desk's own
 view (`causes.ts`) of the export, and come from it at render time.
 </Callout>
+
+## Outcome
+
+Engineering closed #4471 on 5 October:
+
+- `parser`: **fixed** by `fix(dates): parse dd/mm for eu locales`. Ticket #1 closed as completed.
+- `hint`: **won't fix**, because the booking-v3 form is retired. Ticket #2 closed as not planned.
+- `one-day`: the desk counts these reports under `parser`, so the parser fix closes them too.
+  Ticket #3 closed as a duplicate of #1. Reopen it if one-day moves still come in after the fix.
 
 ## The problems
 
